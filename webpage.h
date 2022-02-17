@@ -255,11 +255,10 @@ svg circle:nth-child(2){
     {
       getPOTval();
     }, 2000);
-    //-------------------------------------------------------
-    var POTvalRequest = new XMLHttpRequest();
+    //------------------------------------------------------
     function getPOTval()
     {
-      //var POTvalRequest = new XMLHttpRequest();
+      var POTvalRequest = new XMLHttpRequest();
       POTvalRequest.onreadystatechange = function()
       {
         if(this.readyState == 4 && this.status == 200)
@@ -275,7 +274,7 @@ svg circle:nth-child(2){
     //-------------------------------------------------------
     function light_btn()
     {
-        //var xhttp = new XMLHttpRequest();
+        var xhttp = new XMLHttpRequest();
         POTvalRequest.onreadystatechange = function(){
             if(this.readyState == 4 && this.status == 200){
                 document.getElementById("l_status").innerHTML=
@@ -283,8 +282,8 @@ svg circle:nth-child(2){
   
             }
         };
-        POTvalRequest.open("GET", "light", true);
-        POTvalRequest.send();
+        xhttp.open("GET", "light", true);
+        xhttp.send();
         return;
 
     }
