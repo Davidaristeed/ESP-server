@@ -199,14 +199,14 @@ svg circle:nth-child(2){
                                 <circle cx="70" cy="70" r="70"></circle>
                             </svg>
                             <div class="number">
-                                <h2 id="POTvalue">20<span>C</span></h2>
+                                <h2><var id="TempValue">20</var><span>C</span></h2>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="text">TEMP</div>
                 <div>
-                    <button class="button"> FAN:<span>ON </span></button>
+                    <button type="button" class="button" onclick="fan_btn()" > <span>FAN:</span><var id="F_status"></var></button>
                 </div>
             </div>
             <div class="card">
@@ -218,33 +218,33 @@ svg circle:nth-child(2){
                                 <circle cx="70" cy="70" r="70"></circle>
                             </svg>
                             <div class="number">
-                                <h2>80<span>%</span></h2>
+                                <h2><var id="WatValue">80</var><span>%</span></h2>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="text">WATER</div>
                 <div>
-                    <button class="button"> Pump:<span>ON </span></button>
+                    <button type="button" class="button" onclick="pump_btn()"><span> Pump:</span><var id="P_status"></var></button>
                 </div>
             </div>
             <div class="card">
                 <div class="box">
                     <div>
                         <div class="percent">
-                            <svg>
+                            <svg id="circle">
                                 <circle cx="70" cy="70" r="70"></circle>
                                 <circle cx="70" cy="70" r="70"></circle>
                             </svg>
                             <div class="number">
-                                <h2>65<span>%</span></h2>
+                                <h2><var id="PwrValue">65</var><span>%</span></h2>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="text">Power</div>
                 <div>
-                    <button type="button" class="button" id="l_status" onclick="light_btn()"> Lights:<span>ON </span></button>
+                    <button type="button" class="button" onclick="light_btn()"><span > Lights:</span><var id="l_status"></var></button>
                 </div>
             </div>
         </div>
@@ -253,28 +253,67 @@ svg circle:nth-child(2){
 <script>
        setInterval(function()
     {
-      getPOTval();
-    }, 2000);
-    //------------------------------------------------------
-    function getPOTval()
+      getTemp();
+      getTanLev();
+      getPwr();
+     
+    },2000);
+    //-------------------------------------------------------
+
+
+    var POTvalRequest = new XMLHttpRequest();
+    var message;
+
+    function getTemp()
     {
-      var POTvalRequest = new XMLHttpRequest();
+      var message;
+      var value;
       POTvalRequest.onreadystatechange = function()
       {
         if(this.readyState == 4 && this.status == 200)
         {
-          document.getElementById("POTvalue").innerHTML =
-          this.responseText;
+          message = this.responseText;
+          value = (int(message)/4095 * 100);
+          document.getElementById("TempValue").innerHTML = value ;
+          
         }
       };
       POTvalRequest.open("GET", "readPOT", true);
       POTvalRequest.send();
       return;
     }
+
+    function getTanLev(){
+      POTvalRequest.onreadystatechange = function()
+      {
+        if(this.readyState == 4 && this.status == 200)
+        {
+          document.getElementById("WatValue").innerHTML = this.responseText;
+        }
+      }
+      POTvalRequest.open("GET","water",false);
+      POTvalRequest.send();
+      return;
+    }
+
+    function getPwr(){
+      POTvalRequest.onreadystatechange = function()
+      {
+        if(this.readyState == 4 && this.status == 200)
+        {
+          document.getElementById("PwrValue").innerHTML = this.responseText;
+          let reading = this.responseText;
+          const circle = document.querySelector(".percent")
+          circle.style.strokeDashoffset = reading;
+        }
+      }
+      POTvalRequest.open("GET","pwr",true);
+      POTvalRequest.send();
+    }
     //-------------------------------------------------------
+
     function light_btn()
     {
-        var xhttp = new XMLHttpRequest();
         POTvalRequest.onreadystatechange = function(){
             if(this.readyState == 4 && this.status == 200){
                 document.getElementById("l_status").innerHTML=
@@ -282,10 +321,35 @@ svg circle:nth-child(2){
   
             }
         };
-        xhttp.open("GET", "light", true);
-        xhttp.send();
+        POTvalRequest.open("GET", "light", false);
+        POTvalRequest.send();
         return;
-
+    }
+    function pump_btn()
+    {
+        POTvalRequest.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200){
+                document.getElementById("P_status").innerHTML=
+                this.responseText;
+  
+            }
+        };
+        POTvalRequest.open("GET", "pump", false);
+        POTvalRequest.send();
+        return;
+    }
+    function fan_btn()
+    {
+        POTvalRequest.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200){
+                document.getElementById("F_status").innerHTML=
+                this.responseText;
+  
+            }
+        };
+        POTvalRequest.open("GET", "fan", false);
+        POTvalRequest.send();
+        return;
     }
 </script>
 </html>
